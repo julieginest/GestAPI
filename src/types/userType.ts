@@ -7,11 +7,10 @@ interface UsertypeQuery {
     name ?: string | null,
 }
 
-/* SQL
+const UserTypesSQL: string = `
 
-CREATE TABLE `UserTypes` (
-    `name` VARCHAR(15),
-	PRIMARY KEY (`name`),
-)
-
-*/
+CREATE TABLE \`UserTypes\` (
+    \`name\` VARCHAR(15),
+	PRIMARY KEY (\`name\`),
+);
+`

@@ -13,16 +13,15 @@ interface UserQuery{
     typeName ?: string | null,
 }
 
-/* SQL
+const UserSQL: string = `
 
-CREATE TABLE `Users` (
-	`Id` VARCHAR(10),
-	`firstName` VARCHAR(20),
-	`lastName` VARCHAR(20),
-    `typeName` VARCHAR(15),
-	PRIMARY KEY (`Id`),
-    CONSTRAINT `fk_Users-UserTypes` FOREIGN KEY (typeName) REFERENCES EPIs (name),
+CREATE TABLE \`Users\` (
+	\`Id\` VARCHAR(10),
+	\`firstName\` VARCHAR(20),
+	\`lastName\` VARCHAR(20),
+    \`typeName\` VARCHAR(15),
+	PRIMARY KEY (\`Id\`),
+    CONSTRAINT \`fk_Users-UserTypes\` FOREIGN KEY (typeName) REFERENCES EPIs (name),
 
 );
-
-*/
+`

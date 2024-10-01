@@ -26,22 +26,21 @@ interface EpiQuery {
     commissioning ?: Date | null,
 }
 
-/* SQL
+const EPISQL: string = `
 
-CREATE TABLE `EPIs` (
-	`Id` VARCHAR(10) NOT NULL,
-	`typeWording` VARCHAR(25) NOT NULL,
-	`brand` VARCHAR(25) NOT NULL,
-	`model` VARCHAR(25) NOT NULL,
-	`serieNo` VARCHAR(25) NOT NULL,
-	`size` VARCHAR(2),
-	`lenght` INT,
-	`color` VARCHAR(10),
-	`purchase` DATE,
-	`manufacture` DATE,
-	`commissioning` DATE,
-	PRIMARY KEY (`Id`),
-    CONSTRAINT `fk_EPIs-EPITypes` FOREIGN KEY (typeWording) REFERENCES EPITypes (wordingEn),
+CREATE TABLE \`EPIs\` (
+	\`Id\` VARCHAR(10) NOT NULL,
+	\`typeWording\` VARCHAR(25) NOT NULL,
+	\`brand\` VARCHAR(25) NOT NULL,
+	\`model\` VARCHAR(25) NOT NULL,
+	\`serieNo\` VARCHAR(25) NOT NULL,
+	\`size\` VARCHAR(3),
+	\`lenght\` INT,
+	\`color\` VARCHAR(10),
+	\`purchase\` DATE,
+	\`manufacture\` DATE,
+	\`commissioning\` DATE,
+	PRIMARY KEY (\`Id\`),
+    CONSTRAINT \`fk_EPIs-EPITypes\` FOREIGN KEY (typeWording) REFERENCES EPITypes (wordingEn),
 );
-
-*/
+`

@@ -9,13 +9,11 @@ interface EpistatusQuery {
     isUsable ?: boolean | null,
 }
 
-/* SQL
+const EPIStatiusSQL: string = `
 
-CREATE TABLE `EPIStatus` (
-	`wording` VARCHAR(10) NOT NULL,
-	`isUsable` BOOLEAN NOT NULL DEFAULT 0,
-	PRIMARY KEY (`wording`),
+CREATE TABLE \`EPIStatus\` (
+	\`wording\` VARCHAR(10) NOT NULL,
+	\`isUsable\` BOOLEAN NOT NULL DEFAULT 0,
+	PRIMARY KEY (\`wording\`),
 );
-
-
-*/
+`
