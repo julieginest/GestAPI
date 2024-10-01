@@ -1,4 +1,4 @@
-interface ControlObject {
+export interface ControlObject {
     Id: number,
     date: Date,
     managerId: string,
@@ -7,7 +7,7 @@ interface ControlObject {
     comment: string,
 }
 
-interface ControlQuery {
+export interface ControlQuery {
     Id ?: number | null,
     date ?: Date | null,
     managerId ?: string | null,

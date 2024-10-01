@@ -1,10 +1,10 @@
-interface EpitypesObject {
+export interface EpitypesObject {
     wordingEn: string,
     wordingFr: string,
     controlGap: number,
 }
 
-interface EpitypesQuery {
+export interface EpitypesQuery {
     wordingEn ?: string | null,
     wordingFr ?: string | null,
     controlGap ?: number | null,

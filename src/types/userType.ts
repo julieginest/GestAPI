@@ -1,9 +1,9 @@
-interface UsertypeObject {
+export interface UsertypeObject {
     name: string,
 }
 
 
-interface UsertypeQuery {
+export interface UsertypeQuery {
     name ?: string | null,
 }
 

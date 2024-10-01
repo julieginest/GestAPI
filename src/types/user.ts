@@ -1,4 +1,4 @@
-interface UserObject{
+export interface UserObject{
     Id: string,
     firstName: string,
     lastName: string,
@@ -6,7 +6,7 @@ interface UserObject{
 }
 
 
-interface UserQuery{
+export interface UserQuery{
     Id ?: string | null,
     firstName ?: string | null,
     lastName ?: string | null,

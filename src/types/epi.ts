@@ -1,4 +1,4 @@
-interface EpiObject {
+export interface EpiObject {
     Id : string,
     typeWording: string,
     brand: string,
@@ -12,7 +12,7 @@ interface EpiObject {
     commissioning: Date,
 }
 
-interface EpiQuery {
+export interface EpiQuery {
     Id ?: string | null,
     typeWording ?: string | null,
     brand ?: string | null,

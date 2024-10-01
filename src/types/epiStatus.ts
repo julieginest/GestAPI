@@ -1,10 +1,10 @@
-interface EpistatusObject {
+export interface EpistatusObject {
     wording: string,
     isUsable: boolean,
 }
 
 
-interface EpistatusQuery {
+export interface EpistatusQuery {
     wording ?: string | null,
     isUsable ?: boolean | null,
 }
