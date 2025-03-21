@@ -1,134 +1,121 @@
+"use server"
 /**** Imports ****/
-import { pool } from "./database"
-import {ControlObject,ControlQuery} from "../types/control"
+import { pool, db } from "./database";
+import { ControlObject, ControlQuery, ControlCreation } from "../types/control";
 
-export const maintenancesModel = {
-    get: async (args: ControlQuery): Promise<ControlObject[]> =>{
-        var where: string = " "
-        var values: any[] =[]
-        
-        if(args.Id){
-            where += "Id = ?"
-            values.push(args.Id)
-        };
-        if(args.comment){
-            where += "comment = ?"
-            values.push(args.comment)
-        };
-        if(args.date){
-            where += "date = ?"
-            values.push(args.date)
-        };
-        if(args.managerId){
-            where += "managerId = ?"
-            values.push(args.managerId)
-        };
-        if(args.epiId){
-            where += "epiId = ?"
-            values.push(args.epiId)
-        };
-        if(args.status){
-            where += "status = ?"
-            values.push(args.status)
-        };
+/**
+ * Crée un nouvel enregistrement dans la table Controls.
+ * @param args - Les données de création de l'enregistrement.
+ * @returns `true` si l'insertion réussit, sinon `false`.
+ */
+export async function createControl(args: ControlCreation): Promise<boolean> {
+    try {
+        await db.newRecord(
+            "Controls",
+            Object.keys(args),
+            Object.values({
+                ...args,
+                date: args.date.toISOString().split("T")[0], // Formatage de la date
+            })
+        );
+        return true;
+    } catch (e) {
+        console.error("Erreur lors de la création :", e);
+        throw new Error("Erreur lors de la création de l'enregistrement");
+    }
+}
 
-        var conn;
-        var rows: ControlObject[];
+/**
+ * Récupère des enregistrements de la table Controls en fonction des critères de recherche.
+ * @param args - Les critères de recherche.
+ * @returns Un tableau d'objets `ControlObject`.
+ */
+export async function readControls(args: ControlQuery): Promise<ControlObject[]> {
+    let where: string[] = [];
+    let values: any[] = [];
 
-        try{
-            conn = await pool.getConnection();
-            
-            rows = await pool.query(`select * from Controls${where}`,values)
-        }catch(e){
-            rows = [];
-        }finally{
-            if(conn) conn.release();
+    Object.entries(args).forEach(([key, value]) => {
+        if (value !== undefined) {
+            where.push(`${key} = ?`);
+            values.push(value);
         }
+    });
 
-        return rows;
-        
-    },
+    const whereString = where.length ? ` WHERE ${where.join(" AND ")}` : "";
 
-    update: async (args: ControlQuery, Id?: number | null): Promise<ControlObject> =>{
-        var set: string = " "
-        var values: any[] =[]
-        
-       
-       
-        if(args.comment){
-            set += "comment = ?"
-            values.push(args.comment)
-        };
-        if(args.date){
-            set += "date = ?"
-            values.push(args.date)
-        };
-        if(args.managerId){
-            set += "managerId = ?"
-            values.push(args.managerId)
-        };
-        if(args.epiId){
-            set += "epiId = ?"
-            values.push(args.epiId)
-        };
-        if(args.status){
-            set += "status = ?"
-            values.push(args.status)
-        };
+    let conn;
+    let rows: ControlObject[] = [];
 
+    try {
+        conn = await pool.getConnection();
+        rows = await conn.query(`SELECT * FROM Controls${whereString}`, values);
+    } catch (e) {
+        console.error("Erreur lors de la lecture :", e);
+        throw new Error("Erreur lors de la récupération des enregistrements");
+    } finally {
+        if (conn) conn.release();
+    }
 
+    return rows;
+}
 
-        if(
-            (!args.Id && !Id) ||
-            (args.Id != (Id || null)) ||
-            (Id != (args.Id || null))
-        ){
-            throw new Error("Error in Id definition");
-        }else{
-            values.push(Id || args.Id);
-        };
+/**
+ * Met à jour un enregistrement dans la table Controls.
+ * @param args - Les nouvelles valeurs de l'enregistrement.
+ * @param Id - La clé primaire de l'enregistrement à mettre à jour.
+ * @returns L'enregistrement mis à jour.
+ */
+export async function updateControl(args: ControlQuery, Id: number): Promise<ControlObject> {
+    if (!Id) throw new Error("ID requis pour la mise à jour");
 
-        var conn;
-        var rows: ControlObject[] = [];
+    let set: string[] = [];
+    let values: any[] = [];
 
-        try{
-            conn = await pool.getConnection();
-            
-            rows = await pool.query(`UPDATE Controls${set} WHERE Id = ?`,values)
-        }catch(e){
-            
-        }finally{
-            if(conn) conn.release();
+    Object.entries(args).forEach(([key, value]) => {
+        if (value !== undefined) {
+            set.push(`${key} = ?`);
+            values.push(value);
         }
+    });
 
-        return rows[0];
-        
-        
-    },
+    if (set.length === 0) throw new Error("Aucune donnée à mettre à jour");
 
-    delete: async (Id?: number | null): Promise<ControlObject> =>{
-        var values: any[] = [];
-        
-       
-       
-        
-        var conn;
-        var rows: ControlObject[] = [] 
+    values.push(Id); // Ajout de l'ID à la fin des valeurs
 
-        try{
-            conn = await pool.getConnection();
-            
-            rows = await pool.query(`DELETE FROM Controls WHERE Id = ?`,values)
-        }catch(e){
-            
-        }finally{
-            if(conn) conn.release();
-        }
+    let conn;
+    let rows: ControlObject[] = [];
 
-        return rows[0];
-        
-        
-    },
+    try {
+        conn = await pool.getConnection();
+        rows = await conn.query(`UPDATE Controls SET ${set.join(", ")} WHERE Id = ?`, values);
+    } catch (e) {
+        console.error("Erreur lors de la mise à jour :", e);
+        throw new Error("Erreur lors de la mise à jour de l'enregistrement");
+    } finally {
+        if (conn) conn.release();
+    }
 
+    return rows[0];
+}
 
+/**
+ * Supprime un enregistrement de la table Controls.
+ * @param Id - La clé primaire de l'enregistrement à supprimer.
+ * @returns `true` si la suppression réussit, sinon `false`.
+ */
+export async function deleteControl(Id: number): Promise<boolean> {
+    if (!Id) throw new Error("ID requis pour la suppression");
+
+    let conn;
+
+    try {
+        conn = await pool.getConnection();
+        await conn.query(`DELETE FROM Controls WHERE Id = ?`, [Id]);
+        return true;
+    } catch (e) {
+        console.error("Erreur lors de la suppression :", e);
+        throw new Error("Erreur lors de la suppression de l'enregistrement");
+    } finally {
+        if (conn) conn.release();
+    }
 }

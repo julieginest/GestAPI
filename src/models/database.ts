@@ -14,11 +14,11 @@ var BDD_DATABASE = process.env.BDD_DATABASE;
 
 /**** Pool ****/
 export const pool = mariadb.createPool({
-    host: BDD_HOST || "j.ginestiere.fr",
+    host: BDD_HOST || "localhost",
     port:  BDD_PORT || 3307,
     user: BDD_USER || "root",
     password: BDD_PASSWORD || "your_password",
-    database : BDD_DATABASE || "Istres",
+    database : BDD_DATABASE || "GestEPI",
     connectionLimit: 5
 });
 
@@ -26,19 +26,41 @@ export const pool = mariadb.createPool({
 export const db = {
     newRecord: async (table: string, fields: string[], values: any[]): Promise<any> =>{
         var conn;
-        var rows: any[] = [];
+        var response;
 
         try{
             conn = await pool.getConnection();
-            
-            rows = await pool.query(`INSERT INTO ${table} (${fields.join(", ")}) VALUES(${fields.map(m => {return "?,"}).slice(0,-1)})`,values)
+            response = await conn.query(`INSERT INTO ${table} (${fields.join(", ")}) VALUES(${values.map(m => {return "?"})})`,values)
         }catch(e){
-            
+            console.log("Erreur SQL")
+            console.error(e)
+            throw e;
         }finally{
             if(conn) conn.release();
         }
 
-        return rows[0];
+        return response;
+    },
+    updateRecord: async (table: string, fields: string[], values: any[], primaryFields: string /*| string[]*/, primaryValues: string /*| string[]*/): Promise<any> =>{
+        var conn;
+        var response;
+
+        values.push(primaryValues)
+
+        //const WHERE : string = typeof(primaryFields) == "string" ? `${primaryFields} = ?` : primaryFields.join("= ? AND ");
+
+        try{
+            conn = await pool.getConnection();
+            response = await conn.query(`UPDATE ${table} SET ${fields.join(" = ? , ")} = ? WHERE ${primaryFields} = ? ;`,values)
+        }catch(e){
+            console.log("Erreur SQL")
+            console.error(e)
+            throw e;
+        }finally{
+            if(conn) conn.release();
+        }
+
+        return response;
     },
 
     deleteRecord: async (table:string, PKFields:string|string[], PKValues: string | number | any[]): Promise<any> =>{
@@ -65,11 +87,46 @@ export const db = {
             
             rows = await pool.query(`DELETE FROM ${table} WHERE ${PKFields}`,PKValues)
         }catch(e){
-            
+            console.log("Erreur SQL")
+            console.error(e)
+            throw e;
         }finally{
             if(conn) conn.release();
         }
 
         return rows[0];
-    }
+    },
+
+
+
+    readRecords: async (table: string, conditions: Record<string, any>): Promise<any[]> => {
+        let conn;
+        let rows: any[] = [];
+        let where: string[] = [];
+        let values: any[] = [];
+
+        Object.entries(conditions).forEach(([key, value]) => {
+            if (value !== undefined) {
+                where.push(`${key} = ?`);
+                values.push(value);
+            }
+        });
+
+        const whereString = where.length ? ` WHERE ${where.join(" AND ")}` : "";
+
+        try {
+            conn = await pool.getConnection();
+            rows = await conn.query(`SELECT * FROM ${table}${whereString}`, values);
+        } catch (e) {
+            console.log("Erreur SQL")
+            console.error(e)
+            throw e;
+        } finally {
+            if (conn) conn.release();
+        }
+
+        return rows;
+    },
+
+    
 }

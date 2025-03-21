@@ -1,0 +1,141 @@
+/**** Imports ****/
+import { pool, db } from "./database"
+import { EpitypesObject, EpitypesQuery } from "@/types/epiType";
+
+const table = "EPITypes";
+
+const epitypesModel ={
+    create: async (args: EpitypesObject): Promise<Boolean> =>{
+        var status : Boolean = false;
+
+        try{
+            db.newRecord(
+            table,
+            [
+                "wordingEn",
+                "wordingFr",
+                "controlGap",
+            ],
+            [
+                args.wordingEn,
+                args.wordingFr,
+                args.controlGap,
+            ])
+            status = true
+        }catch(e){
+            throw e
+        }
+
+        return status;
+    },
+
+    read: async (args: EpitypesQuery): Promise<EpitypesObject[]> =>{
+        var where: string = " "
+        var values: any[] =[]
+        
+        if(args.wordingEn){
+            where += "wordingEn = ?"
+            values.push(args.wordingEn)
+        };
+        if(args.wordingFr){
+            where += "wordingFr = ?"
+            values.push(args.wordingFr)
+        };
+        if(args.controlGap){
+            where += "controlGap = ?"
+            values.push(args.controlGap)
+        };
+        
+
+        var conn;
+        var rows: EpitypesObject[];
+
+        try{
+            conn = await pool.getConnection();
+            
+            rows = await conn.query(`select * from ${table}${where}`,values)
+        }catch(e){
+            console.log(e)
+            rows = [];
+        }finally{
+            if(conn) conn.release();
+        }
+
+        return rows;
+        
+    },
+
+    update: async (args: EpitypesQuery, wordingEn?: string | null): Promise<EpitypesObject> =>{
+        var set: string = " "
+        var values: any[] =[]
+        
+       
+       
+        if(args.wordingFr){
+            set += "wordingFr = ?"
+            values.push(args.wordingFr)
+        };
+        if(args.controlGap){
+            set += "controlGap = ?"
+            values.push(args.controlGap)
+        };
+
+
+
+        if(
+            (!args.wordingEn && !wordingEn) ||
+            (args.wordingEn != (wordingEn || null)) ||
+            (wordingEn != (args.wordingEn || null))
+        ){
+            throw new Error("Error in Id definition");
+        }else{
+            values.push(wordingEn || args.wordingEn);
+        };
+
+        var conn;
+        var rows: EpitypesObject[] = [];
+
+        try{
+            conn = await pool.getConnection();
+            
+            rows = await conn.query(`UPDATE ${table}${set} WHERE wordingEn = ?`,values)
+        }catch(e){
+            
+        }finally{
+            if(conn) conn.release();
+        }
+
+        return rows[0];
+        
+        
+    },
+
+    delete: async (wordingEn?: string | null): Promise<EpitypesObject> =>{
+        var values: any[] = [];
+        
+       
+       
+        
+        var conn;
+        var rows: EpitypesObject[] = [] 
+
+        try{
+            conn = await pool.getConnection();
+            
+            rows = await conn.query(`DELETE FROM ${table} WHERE wordingEn = ?`,values)
+        }catch(e){
+            
+        }finally{
+            if(conn) conn.release();
+        }
+
+        return rows[0];
+        
+        
+    },
+}
+
+export const createEpiType = epitypesModel.create;
+export const readEpiTypes = epitypesModel.read;
+export const updateEpiType = epitypesModel.update;
+export const deleteEpiType = epitypesModel.delete;

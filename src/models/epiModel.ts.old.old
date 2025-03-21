@@ -1,0 +1,215 @@
+/**** Imports ****/
+import { pool, db } from "./database"
+import { EpiObject, EpiQuery } from "@/types/epi"
+
+const table = "EPIs";
+
+export const epiModel ={
+    create: async (args: EpiObject): Promise<Boolean> =>{
+        var status : Boolean = false;
+
+        try{
+            db.newRecord(
+            table,
+            [
+                "Id",
+                "typeWording",
+                "brand",
+                "model",
+                "serieNo",
+                "size",
+                "lenght",
+                "color",
+                "purchase",
+                "manufacture",
+                "commissioning"
+            ],
+            [
+                args.Id,
+                args.typeWording,
+                args.brand,
+                args.model,
+                args.serieNo,
+                args.size,
+                args.lenght,
+                args.color,
+                args.purchase.toISOString().split('T')[0],
+                args.manufacture.toISOString().split('T')[0],
+                args.commissioning.toISOString().split('T')[0]
+            ])
+            status = true
+        }catch(e){
+            throw e
+        }
+
+        return status;
+    },
+
+    read: async (args: EpiQuery): Promise<EpiObject[]> =>{
+        var where: string = " "
+        var values: any[] =[]
+        
+        if(args.Id){
+            where += "Id = ?"
+            values.push(args.Id)
+        };
+        if(args.typeWording){
+            where += "typeWording = ?"
+            values.push(args.typeWording)
+        };
+        if(args.brand){
+            where += "brand = ?"
+            values.push(args.brand)
+        };
+        if(args.model){
+            where += "model = ?"
+            values.push(args.model)
+        };
+        if(args.serieNo){
+            where += "serieNo = ?"
+            values.push(args.serieNo)
+        };
+        if(args.size){
+            where += "size = ?"
+            values.push(args.size)
+        };
+        if(args.lenght){
+            where += "lenght = ?"
+            values.push(args.lenght)
+        };
+        if(args.color){
+            where += "color = ?"
+            values.push(args.color)
+        };
+        if(args.purchase){
+            where += "purchase = ?"
+            values.push(args.purchase)
+        };
+        if(args.manufacture){
+            where += "manufacture = ?"
+            values.push(args.manufacture)
+        };
+        if(args.commissioning){
+            where += "commissioning = ?"
+            values.push(args.commissioning)
+        };
+
+        var conn;
+        var rows: EpiObject[];
+
+        try{
+            conn = await pool.getConnection();
+            
+            rows = await conn.query(`select * from ${table}${where}`,values)
+        }catch(e){
+            console.log(e)
+            rows = [];
+        }finally{
+            if(conn) conn.release();
+        }
+
+        return rows;
+        
+    },
+
+    update: async (args: EpiQuery, Id?: number | null): Promise<EpiObject> =>{
+        var set: string = " "
+        var values: any[] =[]
+        
+       
+       
+        if(args.typeWording){
+            set += "typeWording = ?"
+            values.push(args.typeWording)
+        };
+        if(args.brand){
+            set += "brand = ?"
+            values.push(args.brand)
+        };
+        if(args.model){
+            set += "model = ?"
+            values.push(args.model)
+        };
+        if(args.serieNo){
+            set += "serieNo = ?"
+            values.push(args.serieNo)
+        };
+        if(args.size){
+            set += "size = ?"
+            values.push(args.size)
+        };
+        if(args.lenght){
+            set += "lenght = ?"
+            values.push(args.lenght)
+        };
+        if(args.color){
+            set += "color = ?"
+            values.push(args.color)
+        };
+        if(args.purchase){
+            set += "purchase = ?"
+            values.push(args.purchase)
+        };
+        if(args.manufacture){
+            set += "manufacture = ?"
+            values.push(args.manufacture)
+        };
+        if(args.commissioning){
+            set += "commissioning = ?"
+            values.push(args.commissioning)
+        };
+
+
+
+        if(
+            (!args.Id && !Id) ||
+            (args.Id != (Id || null)) ||
+            (Id != (args.Id || null))
+        ){
+            throw new Error("Error in Id definition");
+        }else{
+            values.push(Id || args.Id);
+        };
+
+        var conn;
+        var rows: EpiObject[] = [];
+
+        try{
+            conn = await pool.getConnection();
+            
+            rows = await conn.query(`UPDATE ${table}${set} WHERE Id = ?`,values)
+        }catch(e){
+            
+        }finally{
+            if(conn) conn.release();
+        }
+
+        return rows[0];
+        
+        
+    },
+
+    delete: async (Id?: number | null): Promise<EpiObject> =>{
+        var values: any[] = [];
+        
+       
+       
+        
+        var conn;
+        var rows: EpiObject[] = [] 
+
+        try{
+            conn = await pool.getConnection();
+            
+            rows = await conn.query(`DELETE FROM ${table} WHERE Id = ?`,values)
+        }catch(e){
+            
+        }finally{
+            if(conn) conn.release();
+        }
+
+        return rows[0];
+        
+        
+    },
+}

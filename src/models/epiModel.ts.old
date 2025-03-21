@@ -1,0 +1,258 @@
+"use server";
+
+/**** Imports ****/
+import { pool, db } from "./database";
+import { EpiObject, EpiQuery } from "@/types/epi";
+
+const table = "EPIs";
+
+/**
+ * Crée un nouvel enregistrement dans la table EPIs.
+ * @param args - Les données à insérer.
+ * @returns `true` si l'insertion réussit, sinon `false`.
+ */
+export async function createEpi(args: EpiObject): Promise<boolean> {
+  try {
+    await db.newRecord(
+      table,
+      [
+        "Id",
+        "typeWording",
+        "brand",
+        "model",
+        "serieNo",
+        "size",
+        "lenght",
+        "color",
+        "purchase",
+        "manufacture",
+        "commissioning",
+      ],
+      [
+        args.Id,
+        args.typeWording,
+        args.brand,
+        args.model,
+        args.serieNo,
+        args.size,
+        args.lenght,
+        args.color,
+        args.purchase.toISOString().split("T")[0],
+        args.manufacture.toISOString().split("T")[0],
+        args.commissioning.toISOString().split("T")[0],
+      ]
+    );
+    return true;
+  } catch (e) {
+    console.error("Erreur lors de la création :", e);
+    throw new Error("Erreur lors de la création de l'enregistrement");
+  }
+}
+
+/**
+ * Récupère des enregistrements de la table EPIs en fonction des critères de recherche.
+ * @param args - Les critères de recherche.
+ * @returns Un tableau d'objets `EpiObject`.
+ */
+export async function readEpis(args: EpiQuery): Promise<EpiObject[]> {
+  let where: Array<string> = [];
+  let values: any[] = [];
+
+  if (args.Id) {
+    where.push("Id = ? ");
+    values.push(args.Id);
+  }
+  if (args.typeWording) {
+    where.push("typeWording = ? ");
+    values.push(args.typeWording);
+  }
+  if (args.brand) {
+    where.push("brand = ? ");
+    values.push(args.brand);
+  }
+  if (args.model) {
+    where.push("model = ? ");
+    values.push(args.model);
+  }
+  if (args.serieNo) {
+    where.push("serieNo = ? ");
+    values.push(args.serieNo);
+  }
+  if (args.size) {
+    where.push("size = ? ");
+    values.push(args.size);
+  }
+  if (args.lenght) {
+    where.push("lenght = ? ");
+    values.push(args.lenght);
+  }
+  if (args.color) {
+    where.push("color = ? ");
+    values.push(args.color);
+  }
+  if (args.purchase) {
+    where.push("purchase = ? ");
+    values.push(args.purchase);
+  }
+  if (args.manufacture) {
+    where.push("manufacture = ? ");
+    values.push(args.manufacture);
+  }
+  if (args.commissioning) {
+    where.push("commissioning = ? ");
+    values.push(args.commissioning);
+  }
+
+  let conn;
+  let rows: EpiObject[] = [];
+
+  where.push("TRUE")
+  const whereString = " WHERE " + where.join(" AND ")
+
+  try {
+    conn = await pool.getConnection();
+    rows = await conn.query(`SELECT * FROM ${table}${whereString}`, values);
+  } catch (e) {
+    console.error("Erreur lors de la lecture :", e);
+    throw new Error("Erreur lors de la récupération des enregistrements");
+  } finally {
+    if (conn) conn.release();
+  }
+
+  return rows;
+}
+
+/**
+ * Met à jour un enregistrement dans la table EPIs.
+ * @param args - Les nouvelles valeurs.
+ * @param Id - La clé primaire pour identifier l'enregistrement.
+ * @returns L'enregistrement mis à jour.
+ */
+export async function updateEpi(args: EpiObject, Id: string): Promise<EpiObject> {
+  let set: string = " ";
+  let values: any[] = [];
+
+  try {
+    await db.updateRecord(
+      table,
+      [
+        "Id",
+        "typeWording",
+        "brand",
+        "model",
+        "serieNo",
+        "size",
+        "lenght",
+        "color",
+        "purchase",
+        "manufacture",
+        "commissioning",
+      ],
+      [
+        args.Id,
+        args.typeWording,
+        args.brand,
+        args.model,
+        args.serieNo,
+        args.size,
+        args.lenght,
+        args.color,
+        args.purchase.toISOString().split("T")[0],
+        args.manufacture.toISOString().split("T")[0],
+        args.commissioning.toISOString().split("T")[0],
+      ],
+      "Id",
+      Id
+    );
+    return {} as EpiObject;
+  } catch (e) {
+    console.error("Erreur lors de la création :", e);
+    throw new Error("Erreur lors de la création de l'enregistrement");
+  }
+
+
+  if (args.typeWording) {
+    set += "typeWording = ? ";
+    values.push(args.typeWording);
+  }
+  if (args.brand) {
+    set += "brand = ? ";
+    values.push(args.brand);
+  }
+  if (args.model) {
+    set += "model = ? ";
+    values.push(args.model);
+  }
+  if (args.serieNo) {
+    set += "serieNo = ? ";
+    values.push(args.serieNo);
+  }
+  if (args.size) {
+    set += "size = ? ";
+    values.push(args.size);
+  }
+  if (args.lenght) {
+    set += "lenght = ? ";
+    values.push(args.lenght);
+  }
+  if (args.color) {
+    set += "color = ? ";
+    values.push(args.color);
+  }
+  if (args.purchase) {
+    set += "purchase = ? ";
+    values.push(args.purchase.toISOString().split("T")[0],);
+  }
+  if (args.manufacture) {
+    set += "manufacture = ? ";
+    values.push(args.manufacture.toISOString().split("T")[0],);
+  }
+  if (args.commissioning) {
+    set += "commissioning = ? ";
+    values.push(args.commissioning.toISOString().split("T")[0],);
+  }
+
+  if (!Id && !args.Id) {
+    throw new Error("Erreur : Id est requis pour la mise à jour");
+  }
+  values.push(Id || args.Id);
+
+  let conn;
+  let rows: EpiObject[] = [];
+
+  try {
+    conn = await pool.getConnection();
+    rows = await conn.query(`UPDATE ${table} SET ${set} WHERE Id = ?`, values);
+  } catch (e) {
+    console.error("Erreur lors de la mise à jour :", e);
+    throw new Error("Erreur lors de la mise à jour de l'enregistrement");
+  } finally {
+    if (conn) conn.release();
+  }
+
+  return rows[0];
+}
+
+/**
+ * Supprime un enregistrement de la table EPIs.
+ * @param Id - La clé primaire pour identifier l'enregistrement.
+ * @returns L'enregistrement supprimé.
+ */
+export async function deleteEpi(Id?: number | null): Promise<EpiObject> {
+  let values: any[] = [Id];
+
+  let conn;
+  let rows: EpiObject[] = [];
+
+  try {
+    conn = await pool.getConnection();
+    rows = await conn.query(`DELETE FROM ${table} WHERE Id = ?`, values);
+  } catch (e) {
+    console.error("Erreur lors de la suppression :", e);
+    throw new Error("Erreur lors de la suppression de l'enregistrement");
+  } finally {
+    if (conn) conn.release();
+  }
+
+  return rows[0];
+}
