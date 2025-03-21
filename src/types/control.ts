@@ -7,6 +7,14 @@ export interface ControlObject {
     comment: string,
 }
 
+export interface ControlCreation {
+    date: Date,
+    managerId: string,
+    epiId: string,
+    status: string,
+    comment: string,
+}
+
 export interface ControlQuery {
     Id ?: number | null,
     date ?: Date | null,
@@ -20,7 +28,7 @@ export interface ControlQuery {
 const controlSQL: string = `
 
 CREATE TABLE \`Controls\` (
-	\`Id\` INT NOT NULL,
+	\`Id\` INT NOT NULL AUTO_INCREMENT FIRST,
 	\`date\` DATE NOT NULL,
     \`managerId\` VARCHAR(10) NOT NULL,
     \`epiId\` VARCHAR(10) NOT NULL,
