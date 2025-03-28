@@ -4,6 +4,9 @@ import { useState, useEffect, useActionState } from 'react';
 import { EpitypesObject } from "@/types/epiType";
 import { readEpiTypes } from '@/models/epiTypeModel';
 import { readEpis } from "@/models/epiModel";
+import { EpistatusObject } from "@/types/epiStatus";
+import { readEpistatus } from "@/models/epiStatusModel";
+import { readControls } from "@/models/controlModel";
 import { usePathname, useSearchParams } from "next/navigation";
 import { EpiObject, EpiQuery } from "@/types/epi";
 import { create } from "domain";
@@ -17,12 +20,78 @@ export function FormViaURL({style}:{style?:CSSProperties}){
     const epiId = searchParams.get("epi");
     const create = searchParams.get("create");
 
+    const [newControl, changeNewControl] = useState<Boolean>(false);
+    const [statusList, setStatusList] = useState<EpistatusObject[]>([])
+    const [loading, setLoading] = useState<Boolean>(true)
+
+    function plusButton(){
+        if(newControl){
+            changeNewControl(false)
+        }else{
+            changeNewControl(true)
+        }
+    }
+
+    const fetchEpiTypes = async () => {
+        try {
+            const data = await readEpistatus({});
+            setStatusList(data);
+        } catch (err) {
+            console.error("Erreur lors du chargement des status EPI :", err);
+        } finally {
+            setLoading                  
+            (false);
+        }
+    };
+    useEffect(()=>{
+        fetchEpiTypes();
+        
+    },[])
+    
+    if(loading){
+        return <span>Chargement...</span>
+    }
     return (
         <>
             
             {epiId && !create ? <>
                 <Link style={{position: "absolute", top:0, right:0, textAlign:"left"}} href={"/epi-list"}>X</Link>
-                <Form action="update" /> </>: null}
+                <Form action="update" /> 
+
+                {
+                    newControl ?<>
+                    <button style={{width:"100%"}} onClick={plusButton}>Annuler</button>
+                    <form action="">
+                        <input readOnly type="text" name="table" id="table" value="EPIs" style={{visibility:"hidden"}}/>
+                        <input readOnly type="text" name="epiId" id="epiId" value={searchParams.get('epi') as string} style={{visibility:"hidden"}}/>
+                        <div>
+                            {/*<label htmlFor="date">Date de control</label>*/}
+                            <input type="date" name="date" id="date" /*value={formData?.purchase ? new Date(formData.purchase).toISOString().split('T')[0] : ""} onChange={handleChange}*//>
+                        </div>
+                        <div>
+                            {/*<label htmlFor="typeWording">Type</label>*/}
+                            <select name="status" id="status" /*value={formData?.typeWording || epiEdit?.typeWording} onChange={handleChange}*/>
+                                {
+                                    statusList.map(
+                                        t =>
+                                            <option key={t.wording} value={t.wording} /*selected={t.wordingEn === formData?.typeWording}*/ >{t.wording}</option>
+                                    )
+                                }
+                            </select>
+                        </div>
+                        <div>
+                            {/*<label htmlFor="comment">Marque</label>*/}
+                            <textarea style={{resize:"none", width:"100%"}} id="comment" name="comment" /* onChange={handleChange} */>{/*value={formData?.brand || ""} */}</textarea>
+                        </div>
+                        <button type="submit">{"create" == "create" ? "Créer" : "Modifier"}</button>
+                    </form>
+                    </>
+                    :
+                    <button style={{width:"100%"}} onClick={plusButton}> +</button>
+                    
+                }
+
+                </>: null}
             {!epiId && create ? <>
                 <Link style={{position: "absolute", top:0, right:0, textAlign:"left"}} href={"/epi-list"}>X</Link>
                 <Form action="create" /> </>: null}
@@ -67,7 +136,8 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
         } catch (err) {
           console.error("Erreur lors du chargement des types EPI :", err);
         } finally {
-          setLoading(false);
+          setLoading                  
+          (false);
         }
       };
 
@@ -77,6 +147,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
             const data = await readEpis({Id:EpiId});
             setEpiEdit(data[0]);
           } catch (err) {
+            <button>+</button>
             console.error("Erreur lors du chargement des types EPI :", err);
           } finally {
             setLoading(false);
@@ -178,3 +249,24 @@ function Test(){
         }
     )*/
 }
+
+/*function ListControl({Id}:{Id:string}){
+    const [state, act, pending] = useActionState(readControls, undefined)
+    useEffect(() => {
+        act({ epiId: Id }); // Appel seulement après le rendu initial
+    }, [Id]);
+    return<>
+    
+    </>
+}*/
+
+/*function ListControl({ Id }: { Id: string }) {
+    const [state, act, pending] = useActionState(readControls, undefined);
+
+    useEffect(() => {
+        act({ epiId: Id }); // Appel seulement après le rendu initial
+    }, [Id]); // Re-exécute si Id change
+
+    return <>{pending ? "Loading..." : JSON.stringify(state)}</>;
+}
+*/
