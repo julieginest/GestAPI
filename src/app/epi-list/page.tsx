@@ -7,6 +7,7 @@ import { EpiObject } from "@/types/epi";
 import {FormViaURL} from '@/forms/epiForm'
 import { headers } from "next/headers";
 import { CSSProperties } from "react";
+import { readControls } from "@/models/controlModel";
 
 const CreationForm = FormViaURL
 
@@ -54,6 +55,18 @@ export default async function Home(req: Request) {
   const epiEditInside : CSSProperties ={
     position:"sticky",
   }
+  const controlItem : CSSProperties ={
+    border:"1px solid"
+  }
+  const controlItemDiv : CSSProperties ={
+    display:"flex"
+  }
+  const controlItemDivSpan : CSSProperties ={
+    flex:1
+  }
+  const controlItemComment : CSSProperties ={
+    borderTop:"1px dashed"
+  }
   
   
   return (
@@ -83,7 +96,29 @@ export default async function Home(req: Request) {
       <hr />
       <div style={epiEdit}>
         <CreationForm style={epiEditInside}/>
-        
+        <div>
+          { epiId ?
+            (await readControls({epiId:epiId})).map(c => 
+              <div style={controlItem}>
+                <div style={controlItemDiv}>
+                  <span style={controlItemDivSpan}>
+                    {c.managerId}
+                  </span>
+                  <span style={controlItemDivSpan}>
+                    {c.date.getDay().toString().padStart(2, '0')}
+                    /
+                    {c.date.getMonth().toString().padStart(2, '0')}
+                    /
+                    {c.date.getFullYear()}
+                  </span>
+                </div>
+                <p style={controlItemComment}>
+                  {c.comment}
+                </p>
+              </div>
+            ): <></>
+          }
+        </div>
       </div>
 
 
