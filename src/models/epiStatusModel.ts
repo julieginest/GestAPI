@@ -1,3 +1,4 @@
+"use server"
 /**** Imports ****/
 import { db } from "./database";
 import { EpistatusObject, EpistatusQuery } from "@/types/epiStatus";
