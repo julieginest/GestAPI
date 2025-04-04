@@ -1,35 +1,72 @@
 "use client"
+import { readEpistatus } from "@/models/epiStatusModel";
 import  formHandler  from "./formHandler"
 import { useState, useEffect, useActionState } from 'react';
+import { useSearchParams } from "next/navigation";
+import { EpistatusObject } from "@/types/epiStatus";
 
-export default function Form(){
+export default function Form({update}:{update?:number}){
     
     const [state, act, pending] = useActionState(formHandler, undefined)
+    const searchParams = useSearchParams();
+    const epiId = searchParams.get("epi");
+    const create = searchParams.get("create");
+
+    const [EPI, setEPI] = useState<string>("")
+    const [statusList, setStatusList] = useState<EpistatusObject[]>([])
+    const [loading, setLoading] = useState<Boolean>(true)
+
+
+    const fetchEpiTypes = async () => {
+        try {
+            const data = await readEpistatus({});
+            setStatusList(data);
+        } catch (err) {
+            console.error("Erreur lors du chargement des status EPI :", err);
+        } finally {
+            setLoading                  
+            (false);
+        }
+    };
+    useEffect(()=>{
+        fetchEpiTypes();
+    },[])
+    useEffect(()=>{
+        if(epiId){
+            setEPI(epiId)
+        }
+    },[searchParams])
     
+    if(loading){
+        return <span>Chargement...</span>
+    }
+
     return(
         <form action={act}>
+            <span>{epiId}</span>
+            <input readOnly type="text" name="table" id="table" value="Control" style={{visibility:"hidden"}}/>
+            <input readOnly type="text" name="epiId" id="epiId" value={EPI} style={{visibility:"hidden"}}/>
+            {update ? <input readOnly type="number" name="currentId" id="currentId" value={update as number} style={{visibility:"hidden"}}/> : null}
             <div>
-                <label htmlFor="comment">Commentaire</label>
-                <input type="text" name="comment" id="comment" />
+                {/*<label htmlFor="date">Date de control</label>*/}
+                <input type="date" name="date" id="date" /*value={formData?.purchase ? new Date(formData.purchase).toISOString().split('T')[0] : ""} onChange={handleChange}*//>
             </div>
             <div>
-                <label htmlFor="date">date</label>
-                <input type="date" name="date" id="date" />
+                {/*<label htmlFor="typeWording">Type</label>*/}
+                <select name="status" id="status" /*value={formData?.typeWording || epiEdit?.typeWording} onChange={handleChange}*/>
+                    {
+                        statusList.map(
+                            t =>
+                                <option key={t.wording} value={t.wording} /*selected={t.wordingEn === formData?.typeWording}*/ >{t.wording}</option>
+                        )
+                    }
+                </select>
             </div>
             <div>
-                <label htmlFor="managerId">Manager</label>
-                <input type="text" name="managerId" id="managerId" />
+                {/*<label htmlFor="comment">Marque</label>*/}
+                <textarea style={{resize:"none", width:"100%"}} id="comment" name="comment" /* onChange={handleChange} */>{/*value={formData?.brand || ""} */}</textarea>
             </div>
-            
-            <div>
-                <label htmlFor="epiId">EPI ID</label>
-                <input type="text" name="epiId" id="epiId" />
-            </div>
-            <div>
-                <label htmlFor="status">Status</label>
-                <input type="text" name="status" id="status" />
-            </div>
-            <button type="submit">Créer</button>
+            <button type="submit">{update ? "Modifier" : "Créer"}</button>
             {state?.error?.message && <p style={{color:"red"}}>{state.error.message}</p>}
         </form>
         

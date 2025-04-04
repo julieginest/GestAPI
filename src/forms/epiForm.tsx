@@ -12,7 +12,7 @@ import { EpiObject, EpiQuery } from "@/types/epi";
 import { create } from "domain";
 import { CSSProperties } from "react";
 import Link from "next/link";
-
+import ControlForm  from "./controlForm" ;
 
 
 export function FormViaURL({style}:{style?:CSSProperties}){
@@ -21,8 +21,8 @@ export function FormViaURL({style}:{style?:CSSProperties}){
     const create = searchParams.get("create");
 
     const [newControl, changeNewControl] = useState<Boolean>(false);
-    const [statusList, setStatusList] = useState<EpistatusObject[]>([])
-    const [loading, setLoading] = useState<Boolean>(true)
+    // const [statusList, setStatusList] = useState<EpistatusObject[]>([])
+    // const [loading, setLoading] = useState<Boolean>(true)
 
     function plusButton(){
         if(newControl){
@@ -32,25 +32,25 @@ export function FormViaURL({style}:{style?:CSSProperties}){
         }
     }
 
-    const fetchEpiTypes = async () => {
-        try {
-            const data = await readEpistatus({});
-            setStatusList(data);
-        } catch (err) {
-            console.error("Erreur lors du chargement des status EPI :", err);
-        } finally {
-            setLoading                  
-            (false);
-        }
-    };
-    useEffect(()=>{
-        fetchEpiTypes();
+    // const fetchEpiTypes = async () => {
+    //     try {
+    //         const data = await readEpistatus({});
+    //         setStatusList(data);
+    //     } catch (err) {
+    //         console.error("Erreur lors du chargement des status EPI :", err);
+    //     } finally {
+    //         setLoading                  
+    //         (false);
+    //     }
+    // };
+    // useEffect(()=>{
+    //     fetchEpiTypes();
         
-    },[])
+    // },[])
     
-    if(loading){
-        return <span>Chargement...</span>
-    }
+    // if(loading){
+    //     return <span>Chargement...</span>
+    // }
     return (
         <>
             
@@ -58,38 +58,40 @@ export function FormViaURL({style}:{style?:CSSProperties}){
                 <Link style={{position: "absolute", top:0, right:0, textAlign:"left"}} href={"/epi-list"}>X</Link>
                 <Form action="update" /> 
 
-                {
-                    newControl ?<>
-                    <button style={{width:"100%"}} onClick={plusButton}>Annuler</button>
-                    <form action="">
-                        <input readOnly type="text" name="table" id="table" value="EPIs" style={{visibility:"hidden"}}/>
+                {/*
+                    // newControl ?<>
+                    // <button style={{width:"100%"}} onClick={plusButton}>Annuler</button>
+                    // <ControlForm/>
+                    { /*<form action="">
+
+                    <input readOnly type="text" name="table" id="table" value="EPIs" style={{visibility:"hidden"}}/>
                         <input readOnly type="text" name="epiId" id="epiId" value={searchParams.get('epi') as string} style={{visibility:"hidden"}}/>
                         <div>
-                            {/*<label htmlFor="date">Date de control</label>*/}
-                            <input type="date" name="date" id="date" /*value={formData?.purchase ? new Date(formData.purchase).toISOString().split('T')[0] : ""} onChange={handleChange}*//>
+                            <label htmlFor="date">Date de control</label>
+                            <input type="date" name="date" id="date" /*value={formData?.purchase ? new Date(formData.purchase).toISOString().split('T')[0] : ""} onChange={handleChange}/>
                         </div>
                         <div>
-                            {/*<label htmlFor="typeWording">Type</label>*/}
-                            <select name="status" id="status" /*value={formData?.typeWording || epiEdit?.typeWording} onChange={handleChange}*/>
+                            <label htmlFor="typeWording">Type</label>
+                            <select name="status" id="status" /*value={formData?.typeWording || epiEdit?.typeWording} onChange={handleChange}>
                                 {
                                     statusList.map(
                                         t =>
-                                            <option key={t.wording} value={t.wording} /*selected={t.wordingEn === formData?.typeWording}*/ >{t.wording}</option>
+                                            <option key={t.wording} value={t.wording} /*selected={t.wordingEn === formData?.typeWording} >{t.wording}</option>
                                     )
                                 }
                             </select>
                         </div>
                         <div>
-                            {/*<label htmlFor="comment">Marque</label>*/}
-                            <textarea style={{resize:"none", width:"100%"}} id="comment" name="comment" /* onChange={handleChange} */>{/*value={formData?.brand || ""} */}</textarea>
+                            {/*<label htmlFor="comment">Marque</label>}
+                            <textarea style={{resize:"none", width:"100%"}} id="comment" name="comment" /* onChange={handleChange} >{/*value={formData?.brand || ""} </textarea>
                         </div>
                         <button type="submit">{"create" == "create" ? "Créer" : "Modifier"}</button>
-                    </form>
-                    </>
-                    :
-                    <button style={{width:"100%"}} onClick={plusButton}> +</button>
+                    </form>}
+                    // </>
+                    // :
+                    // <button style={{width:"100%"}} onClick={plusButton}> +</button>
                     
-                }
+                */}
 
                 </>: null}
             {!epiId && create ? <>
@@ -179,7 +181,7 @@ return(
         {action == "update" ? <input readOnly type="text" name="currentId" id="currentId" value={searchParams.get('epi') as string} style={{visibility:"hidden"}}/> : null}
         <div>
             <label htmlFor="Id">Id</label>
-            <input type="text" name="Id" id="Id"  value={formData?.Id || ""} onChange={handleChange}/>
+            <input type="text" name="Id" id="Id"  readOnly={action == "update"} value={formData?.Id || ""} onChange={handleChange}/>
         </div>
         <div>
             <label htmlFor="typeWording">Type</label>

@@ -1,0 +1,24 @@
+.controlItemComment{
+    border-top: 1px dashed;
+}
+
+.controlItem{
+    border: 1px solid
+}
+.controlItemDiv{
+    display:flex;
+}
+.controlItemDivSpan{
+    flex:1
+}
+.imageButton{
+    height:1em;
+    width:1em;
+    cursor: pointer;
+}
+#selectedControlItem{
+    border: 2px solid rgb(0, 0, 255);
+    .controlItemComment{
+        border-top: 1px dashed rgb(0, 0, 255);
+    }
+}

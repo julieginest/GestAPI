@@ -68,10 +68,22 @@ export default async function formHandler(state:FormState, formData: FormData):P
         const control = {
           comment: formData.get("comment") as string,
           date: new Date(formData.get("date") as string) as Date,
-          managerId: formData.get("managerId") as string,
+          managerId: "EG55733",//formData.get("managerId") as string,
           epiId: formData.get("epiId") as string,
           status: formData.get("status") as string,
       }
+      const currentId = Number(formData.get("currentId") as string)
+      if(currentId){
+        try{
+          createResponse = updateControl(
+            control,
+            currentId
+        )
+      
+        }catch(e){
+          createError = {message:"Une erreur est survenue"};
+        }
+      }else{
         try{
           createResponse = createControl(
             control
@@ -80,6 +92,7 @@ export default async function formHandler(state:FormState, formData: FormData):P
         }catch(e){
           createError = {message:"Une erreur est survenue"};
         }
+      }
         break;
       }
       
