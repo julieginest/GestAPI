@@ -2,6 +2,7 @@
 import { createControl, readControls, updateControl, deleteControl } from "@/models/controlModel";
 import { createEpi, readEpis, updateEpi, deleteEpi } from "@/models/epiModel";
 import { EpiObject } from "@/types/epi";
+import {GET} from '@/app/Account/isConnected'
 
 type FormState =
   | {
@@ -19,6 +20,8 @@ export default async function formHandler(state:FormState, formData: FormData):P
   var createError;
   
   if(formData.get("table")){
+
+    const user = await GET()
 
     switch (formData.get("table")){
 
@@ -65,34 +68,38 @@ export default async function formHandler(state:FormState, formData: FormData):P
 
 
       case "Control":{
-        const control = {
-          comment: formData.get("comment") as string,
-          date: new Date(formData.get("date") as string) as Date,
-          managerId: "EG55733",//formData.get("managerId") as string,
-          epiId: formData.get("epiId") as string,
-          status: formData.get("status") as string,
-      }
-      const currentId = Number(formData.get("currentId") as string)
-      if(currentId){
-        try{
-          createResponse = updateControl(
-            control,
-            currentId
-        )
-      
-        }catch(e){
-          createError = {message:"Une erreur est survenue"};
+        
+        if(user.isValid) {
+
+          const control = {
+            comment: formData.get("comment") as string,
+            date: new Date(formData.get("date") as string) as Date,
+            managerId: user.user.Id,//formData.get("managerId") as string,
+            epiId: formData.get("epiId") as string,
+            status: formData.get("status") as string,
+          }
+          const currentId = Number(formData.get("currentId") as string)
+          if(currentId){
+            try{
+              createResponse = updateControl(
+                control,
+                currentId
+              )
+              
+            }catch(e){
+              createError = {message:"Une erreur est survenue"};
+            }
+          }else{
+            try{
+              createResponse = createControl(
+                control
+              )
+              
+            }catch(e){
+              createError = {message:"Une erreur est survenue"};
+            }
+          }
         }
-      }else{
-        try{
-          createResponse = createControl(
-            control
-        )
-      
-        }catch(e){
-          createError = {message:"Une erreur est survenue"};
-        }
-      }
         break;
       }
       
