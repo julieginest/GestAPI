@@ -3,6 +3,7 @@ export interface UserObject{
     firstName: string,
     lastName: string,
     typeName: string,
+    pswd: string
 }
 
 
@@ -11,6 +12,7 @@ export interface UserQuery{
     firstName ?: string | null,
     lastName ?: string | null,
     typeName ?: string | null,
+    pswd?: string
 }
 
 const UserSQL: string = `
