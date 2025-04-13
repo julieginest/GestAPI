@@ -30,7 +30,7 @@ export const db = {
 
         try{
             conn = await pool.getConnection();
-            response = await conn.query(`INSERT INTO ${table} (${fields.join(", ")}) VALUES(${values.map(m => {return "?"})})`,values)
+            response = await conn.query(`INSERT INTO ${table} (${fields.join(", ")}) VALUES(${values.map(m => {return "?"})}) RETURNING *;`,values)
         }catch(e){
             console.log("Erreur SQL")
             console.error(e)
@@ -107,7 +107,11 @@ export const db = {
 
         Object.entries(conditions).forEach(([key, value]) => {
             if (value !== undefined) {
-                where.push(`${key} = ?`);
+                if(table=="Users" && key == "pswd"){
+                    where.push(`${key} = SHA2(?,256)`)
+                }else{
+                    where.push(`${key} = ?`);
+                }
                 values.push(value);
             }
         });
