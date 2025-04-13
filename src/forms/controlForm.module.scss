@@ -1,0 +1,161 @@
+// Form container and general styling
+.formContainer {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  border: 1px solid #eaeaea;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+// Hidden fields
+.hiddenField {
+  visibility: hidden;
+  position: absolute;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+// Form elements styling
+.formField {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+  
+  label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: #333;
+    font-size: 0.9rem;
+  }
+}
+
+// Date input styling
+.dateInput {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+  }
+  
+  &:read-only {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
+}
+
+// Status select styling
+.statusSelect {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem top 50%;
+  background-size: 0.65rem auto;
+  padding-right: 2rem;
+  
+  &:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+  }
+}
+
+// Comment textarea styling
+.commentArea {
+  resize: none;
+  width: 100%;
+  min-height: 100px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+  }
+  
+  &:read-only {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
+}
+
+// Button styling
+.submitButton {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  
+  &:hover {
+    background-color: #1976d2;
+  }
+  
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+// Loading state
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  color: #666;
+  font-size: 1rem;
+}
+
+// Error message
+.errorMessage {
+  color: #ff3b30;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+// Form field subheading
+.fieldHeading {
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+// EPI ID display
+.epiIdDisplay {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: #f1f1f1;
+  border-radius: 4px;
+  display: inline-block;
+}

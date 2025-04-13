@@ -1,0 +1,156 @@
+/*** Style par Claude.ai 3.7 ***/
+
+.page {
+    display: flex;
+    flex-direction: row;
+    max-height: 100vh;
+    background-color: #f8f9fa;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .epiList {
+    flex: 0 0 350px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    max-height: 100vh;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 1rem;
+  }
+  
+  .addButton {
+    position: sticky;
+    top: 0;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 100%;
+    
+    &:hover {
+      background-color: #0d8bf2;
+    }
+    
+    span {
+      margin-right: 8px;
+    }
+  }
+  
+  .epiItem {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    background-color: #f8f9fa;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    border: 1px solid #eaeaea;
+    text-decoration: none;
+    color: #333333;
+    
+    &:hover {
+      background-color: #f1f8fe;
+      transform: translateY(-2px);
+    }
+  }
+  
+  .epiItemSelected {
+    composes: epiItem;
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
+  }
+  
+  .epiImg {
+    height: 4rem;
+    width: 4rem;
+    object-fit: cover;
+    margin-right: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    background-color: white;
+  }
+  
+  .epiTextContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .epiName {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+  
+  .epiDetails {
+    font-size: 0.85rem;
+    color: #666;
+  }
+  
+  .epiEdit {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    height: 100%;
+    max-height: 100vh;
+    overflow-y: scroll;
+  }
+  
+  .epiEditInside {
+    margin-bottom: 2rem;
+  }
+  
+  .divider {
+    border-left: 1px solid #eaeaea;
+    margin: 0 1rem;
+    align-self: stretch;
+  }
+  
+  .controlsSection {
+    margin-top: 2rem;
+  }
+  
+  .controlsHeading {
+    margin-bottom: 1rem;
+    color: #333;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 0.5rem;
+  }
+  
+  .noSelectionMessage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #666;
+    font-size: 1.2rem;
+    text-align: center;
+    
+    svg {
+      opacity: 0.6;
+    }
+    
+    p {
+      margin-top: 1rem;
+    }
+  }

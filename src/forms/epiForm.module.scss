@@ -1,0 +1,140 @@
+// Form layout and general styling
+.formContainer {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  
+  // Close button
+  .closeButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    text-align: left;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #666;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: #ff3b30;
+    }
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  
+  // Hidden fields
+  .hiddenField {
+    visibility: hidden;
+    position: absolute;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+  }
+  
+  // Form field wrapper
+  .formField {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.75rem;
+    
+    label {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      color: #333;
+      font-size: 0.9rem;
+    }
+    
+    input, select, textarea {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background-color: #fff;
+      
+      &:focus {
+        outline: none;
+        border-color: #2196f3;
+        box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+      }
+      
+      &:read-only {
+        background-color: #f5f5f5;
+        cursor: not-allowed;
+      }
+    }
+    
+    textarea {
+      resize: none;
+      width: 100%;
+      min-height: 100px;
+    }
+    
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem top 50%;
+      background-size: 0.65rem auto;
+      padding-right: 2rem;
+    }
+  }
+}
+
+// Button styling
+.button {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  
+  &:hover {
+    background-color: #1976d2;
+  }
+  
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.fullWidthButton {
+  composes: button;
+  width: 100%;
+  text-align: center;
+}
+
+// Loading state
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1rem;
+}
+
+// Error message
+.errorMessage {
+  color: #ff3b30;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.newControlSection {
+  margin-top: 1.5rem;
+  border-top: 1px solid #eaeaea;
+  padding-top: 1rem;
+}
