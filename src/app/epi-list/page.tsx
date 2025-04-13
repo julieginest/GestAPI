@@ -2,117 +2,82 @@
 import Image from "next/image";
 import Link from "next/link";
 import styles from "@/app/page.module.css";
+import epiStyles from "./page.module.scss";
 import { readEpis } from "@/models/epiModel";
 import { EpiObject } from "@/types/epi";
-import {FormViaURL} from '@/forms/epiForm'
+import { FormViaURL } from '@/forms/epiForm'
 import { headers } from "next/headers";
-import { CSSProperties } from "react";
-import {List} from "./controlList"
-
+import { List } from "./controlList"
+import { GET } from "@/app/Account/isConnected"
 
 const CreationForm = FormViaURL
 
 export default async function Home(req: Request) {
-  const models : EpiObject[] = await readEpis({})
+  const user = await GET()
+  const userValid = user.isValid
+  const isGestionnaire = user.isValid ? user.user.typeName == "gestionnaire" : false
+  
+  const models: EpiObject[] = await readEpis({})
   const heads = await headers()
-  //const { searchParams } = new URL(heads.get("referer") || "");
 
   const url = heads.get("referer") || "";
   const parsedURL = URL.parse(url);
   const epiId = parsedURL?.searchParams.get('epi') as string;
   const create = parsedURL?.searchParams.get('create') as string;
-
-
-  const page : CSSProperties = {
-    display: "flex",
-    flexDirection: "row",
-    maxHeight:"100vh",
-  }
-
-  const epiList : CSSProperties ={
-    flex:1,
-    overflowY:"scroll",
-    display: "flex",
-    flexDirection:"column",
-    alignSelf:"baseline",
-    maxHeight:"100vh"
-  }
-
-  const epiA : CSSProperties ={
-    alignContent: "left",
-  }
-  const epiImg : CSSProperties ={
-    height:"5em",
-    width:"auto",
-    marginRight: "1em",
-    padding:"0.5em",
-    border: "1px solid black",
-    borderRadius:"1em"
-  }
-  const epiEdit : CSSProperties = {
-    position:"relative",
-    height:"100%",
-  }
-  const epiEditInside : CSSProperties ={
-    position:"sticky",
-  }
-
-  
   
   return (
-    <div className={styles.page} style={page}>
-      <div style={epiList}>
-
-      <Link href={"/epi-list?create=true"}>
-        <button style={{position:"sticky"}}>
-            +
-        </button>
-      </Link>
-      {models.map(c =>
-      <Link key={c.Id} href={"/epi-list?epi="+c.Id} style={epiA}>
-        <div>
-          <Image
-          src={'/'+c.typeWording+".jpg"}
-          alt={c.typeWording}
-          width={512}
-          height={512}
-          style={epiImg}/>
-          <span >{c.typeWording} {c.brand} {c.model}</span>
-        </div>
-     </Link>
-      )}
+    <div className={`${styles.page} ${epiStyles.page}`}>
+      <div className={epiStyles.epiList}>
+        <Link href={"/epi-list?create=true"}>
+          <button className={epiStyles.addButton}>
+            <span>+</span> Ajouter un ÉPI
+          </button>
+        </Link>
+        
+        {models.map(c => (
+          <Link 
+            key={c.Id} 
+            href={"/epi-list?epi="+c.Id} 
+            className={epiId === c.Id ? epiStyles.epiItemSelected : epiStyles.epiItem}
+          >
+            <Image
+              src={'/'+c.typeWording+".jpg"}
+              alt={c.typeWording}
+              width={512}
+              height={512}
+              className={epiStyles.epiImg}
+            />
+            <div className={epiStyles.epiTextContainer}>
+              <span className={epiStyles.epiName}>{c.typeWording}</span>
+              <span className={epiStyles.epiDetails}>{c.brand} {c.model}</span>
+            </div>
+          </Link>
+        ))}
       </div>
 
-      <hr />
-      <div style={epiEdit}>
-        <CreationForm style={epiEditInside}/>
-        <div>
-          <List/>
-          {/* epiId ?
-            (await readControls({epiId:epiId})).map(c => 
-              <div key={c.Id} style={controlItem}>
-                <div style={controlItemDiv}>
-                  <span style={controlItemDivSpan}>
-                    {c.managerId}
-                  </span>
-                  <span style={controlItemDivSpan}>
-                    {c.date.getDay().toString().padStart(2, '0')}
-                    /
-                    {c.date.getMonth().toString().padStart(2, '0')}
-                    /
-                    {c.date.getFullYear()}
-                  </span>
-                </div>
-                <p style={controlItemComment}>
-                  {c.comment}
-                </p>
-              </div>
-            ): <></>
-          */}
-        </div>
+      <div className={epiStyles.divider}></div>
+      
+      <div className={epiStyles.epiEdit}>
+        {epiId || create ? (
+          <>
+            <CreationForm /*className={epiStyles.epiEditInside}*/ readOnly={!isGestionnaire} />
+            <div className={epiStyles.controlsSection}>
+              <h3 className={epiStyles.controlsHeading}>
+                Historique des contrôles
+              </h3>
+              <List userId={userValid ? user.user.Id : undefined} isGestionnaire={isGestionnaire}/>
+            </div>
+          </>
+        ) : (
+          <div className={epiStyles.noSelectionMessage}>
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+              <line x1="4" y1="22" x2="4" y2="15"></line>
+            </svg>
+            <p>Sélectionnez un équipement ou créez-en un nouveau</p>
+          </div>
+        )}
       </div>
-
-
     </div>
   );
 }

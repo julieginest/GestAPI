@@ -2,26 +2,17 @@
 
 import { useSearchParams } from "next/navigation";
 import { readControls } from "@/models/controlModel";
-import { useState, useEffect, CSSProperties } from 'react';
+import { useState, useEffect } from 'react';
 import { ControlObject } from "@/types/control";
-import style from "./controlList.module.scss"
-import ControlForm  from "@/forms/controlForm" ;
+import styles from "./controlList.module.scss"
+import ControlForm  from "@/forms/controlForm";
 
-
-/***** Image *****/
+// Images
 import Image from "next/image";
 import Poubelle from "@/../public/Poubelle.svg"
 import Stylo from "@/../public/Stylo.svg"
-/***** ***** *****/
 
-
-
-export function List(){
-
-
-    
-      
-
+export function List({userId, isGestionnaire}:{userId?:string, isGestionnaire?:boolean}){
     const searchParams = useSearchParams();
     const epiId = searchParams.get("epi");
 
@@ -31,7 +22,6 @@ export function List(){
     const [deleting, setDeleting] = useState<number | undefined>(undefined)
     const [newControl, changeNewControl] = useState<Boolean>(false);
 
-
     function plusButton(){
       if(newControl || editing){
           changeNewControl(false)
@@ -39,7 +29,7 @@ export function List(){
       }else{
           changeNewControl(true)
       }
-  }
+    }
 
     async function getControlList(){
         setLoading(true)
@@ -48,81 +38,105 @@ export function List(){
             setListData(controlList);
         }
         setLoading(false)
-
     }
 
     useEffect(() => {
-
         getControlList()
     }, [epiId]);
 
     if(loading){
         return(
-            <span>
-                Chargement ...
-            </span>
+            <div className={styles.loading}>
+                Chargement...
+            </div>
         )
     }
 
     return (
-
-        <div>
-          {
-            newControl || editing ?
-            <button style={{width:"100%"}} onClick={plusButton}>Annuler</button>
-            :
-            <button style={{width:"100%"}} onClick={plusButton}> +</button>
-          }
-          {
-            editing && !newControl ? <ControlForm update={editing}/> : <></>
-          }
-          {
-            !editing && newControl ? <ControlForm/> : <></>
-          }
+        <div className={styles.controlList}>
+          {newControl || editing ? (
+            <button 
+              className={`${styles.controlButton} ${styles.cancelButton}`} 
+              onClick={plusButton}
+            >
+              Annuler
+            </button>
+          ) : (
+            <button 
+              className={styles.controlButton}
+              onClick={plusButton}
+            >
+              + Ajouter un contrôle
+            </button>
+          )}
+          
+          {editing && !newControl ? (
+            <ControlForm update={editing} isGestionnaire={isGestionnaire ? isGestionnaire : false}/>
+          ) : null}
+          
+          {!editing && newControl ? (
+            <ControlForm isGestionnaire={isGestionnaire ? isGestionnaire : false}/>
+          ) : null}
+          
           <div>
-              {epiId ?
-          listData.map(c => 
-            <div key={c.Id} className={style.controlItem} id={editing == c.Id ? style.selectedControlItem : undefined}>
-              <div className={style.controlItemDiv}>
-                <span className={style.controlItemDivSpan}>
-                  {c.managerId}
-                </span>
-                <span className={style.controlItemDivSpan}>
-                  {c.date.getDay().toString().padStart(2, '0')}
-                  /
-                  {c.date.getMonth().toString().padStart(2, '0')}
-                  /
-                  {c.date.getFullYear()}
-                </span>
-                <div style={{display:"flex",alignItems:"center"}}>
-                  <Image
-                  onClick={() => {
-                    setEditing(c.Id)
-                    changeNewControl(false)
-                  }}
-                  src={Stylo}
-                  width={512}
-                  height={512}
-                  className={style.imageButton}
-                  alt="Edition"
-                  />
-                  <Image
-                  onClick={() => {
-                    setDeleting(c.Id);
-                  }}
-                  src={Poubelle}
-                  width={512}
-                  height={512}
-                  className={style.imageButton}
-                  alt="Supprimer"
-                  />
+            {epiId && listData.length > 0 ? (
+              listData.map(c => (
+                <div 
+                  key={c.Id} 
+                  className={styles.controlItem} 
+                  id={editing === c.Id ? styles.selectedControlItem : undefined}
+                >
+                  <div className={styles.controlItemDiv}>
+                    <span className={styles.controlItemDivSpan}>
+                      {c.managerId}
+                    </span>
+                    <span className={styles.controlItemDivSpan}>
+                      {c.date.getDay().toString().padStart(2, '0')}
+                      /
+                      {c.date.getMonth().toString().padStart(2, '0')}
+                      /
+                      {c.date.getFullYear()}
+                    </span>
+                    <div className={styles.actionButtons}>
+                      <Image
+                        onClick={() => {
+                          setEditing(c.Id)
+                          changeNewControl(false)
+                        }}
+                        src={Stylo}
+                        width={512}
+                        height={512}
+                        className={styles.imageButton}
+                        alt="Edition"
+                        hidden={(userId !== c.managerId) && !isGestionnaire}
+                      />
+                      <Image
+                        onClick={() => {
+                          setDeleting(c.Id);
+                        }}
+                        src={Poubelle}
+                        width={512}
+                        height={512}
+                        className={styles.imageButton}
+                        alt="Supprimer"
+                        hidden={(userId !== c.managerId) && !isGestionnaire}
+                      />
+                    </div>
+                  </div>
+                  <p className={styles.controlItemComment}>
+                    {c.comment}
+                  </p>
                 </div>
+              ))
+            ) : epiId ? (
+              <div className={styles.noItems}>
+                Aucun contrôle n'a été effectué pour cet équipement
               </div>
-              <p className={style.controlItemComment}>
-                {c.comment}
-              </p>
-            </div>
-          ): <></>}
+            ) : (
+              <div className={styles.emptyState}>
+                Sélectionnez un équipement pour voir ses contrôles
+              </div>
+            )}
           </div>
         </div>
     )
